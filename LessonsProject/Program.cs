@@ -1,19 +1,99 @@
 ﻿namespace LessonsProject;
-
-class Program
+internal class Program
 {
-    static void Main(string[] args)
+    public static List<List<int>> TripleOfNumsList(List<int> numbers, int num)
     {
-        Console.WriteLine("Введите: дату занятия (YYYY.MM.DD), название аудитории и имя преподавателя через запятую");
+        List<List<int>> searchingNumbersList = [];
+        if (numbers.Count < 3)
+            return searchingNumbersList;
+        int leftBound = 0;
+        int rightBound = numbers.Count - 1;
         
-        var lessonInfo = Console.ReadLine().Split(',');
-        DateOnly lessonDate = DateOnly.Parse(lessonInfo[0]);
-        string audienceName = lessonInfo[1];
-        string professorName = lessonInfo[2];
+        while (leftBound <= rightBound - 2)
+        {
+            if (searchingNumbersList.Count == 3)
+                break;
+            var searchingNumbers = new List<int>();
+            for (int i = leftBound; i < leftBound + 3; i++)
+            {
+                searchingNumbers.Add(numbers[i]);
+            }
+            
+            if (searchingNumbers.Sum() == num)
+            {
+                searchingNumbersList.Add(searchingNumbers);
+            }
+            leftBound++;
+            
+        }
+        return searchingNumbersList;
         
-        Lesson lesson = new Lesson() {LessonDate = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
-        Console.WriteLine($"Дата занятия: {lesson.LessonDate}");
-        Console.WriteLine($"Имя преподавателя: {lesson.ProfessorName}");
-        Console.WriteLine($"Название аудитории: {lesson.AudienceName}");
+    }
+    static void Main()
+    {
+        List<Lesson> lessons = [];
+        bool start = true;
+        string separator = "----------------------";
+        while (start)
+        {
+            Console.Clear();
+            Console.WriteLine("1.Добавить запись");
+            Console.WriteLine("2.Показать список записей");
+            Console.WriteLine("3.Выход");
+            string choice = Console.ReadLine().Trim().ToLower();
+            switch (choice)
+            {
+                case "1":
+                {
+                    Console.WriteLine("Введите: дату занятия (YYYY.MM.DD), название аудитории и имя преподавателя через запятую");
+                    var lessonInfo = Console.ReadLine().Split(',');
+                    DateOnly lessonDate = DateOnly.Parse(lessonInfo[0]);
+                    string audienceName = lessonInfo[1].Trim();
+                    string professorName = lessonInfo[2].Trim();
+                    Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
+                    lessons.Add(lesson);
+                    break;
+                }
+                case "2":
+                {
+                    foreach (Lesson lesson in lessons)
+                    {
+                        Console.WriteLine(separator);
+                        Console.WriteLine($"Дата занятия: {lesson.Date}");
+                        Console.WriteLine($"Аудитория: {lesson.AudienceName}");
+                        Console.WriteLine($"Имя профессора: {lesson.ProfessorName}");
+                    }
+                    Console.WriteLine("Enter - продолжить");
+                    Console.ReadLine();
+                    break;
+                }
+                case "3":
+                {
+                    Console.WriteLine("Завершить программу? [y/n]");
+                    string answer = Console.ReadLine().Trim().ToLower();
+                    if (answer == "y")
+                    {
+                        start = false;
+                    }
+                    break;
+                }
+                default:
+                {
+                    Console.WriteLine("Неизвестная команда");
+                    break;
+                }
+                
+            }
+        }
+        Console.Clear();
+        Console.WriteLine("Итоговый список записей:");
+        foreach (Lesson lesson in lessons)
+        {
+            Console.WriteLine(separator);
+            Console.WriteLine($"Дата занятия: {lesson.Date}");
+            Console.WriteLine($"Аудитория: {lesson.AudienceName}");
+            Console.WriteLine($"Имя профессора: {lesson.ProfessorName}");
+        }
+        
     }
 }
