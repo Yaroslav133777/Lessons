@@ -1,32 +1,30 @@
 ﻿namespace LessonsProject;
 internal class Program
 {
-    public static List<List<int>> TripleOfNumsList(List<int> numbers, int num)
+    public static List<List<int>> TripletsOfNums(List<int> numbers, int num)
     {
-        List<List<int>> searchingNumbersList = [];
+        List<List<int>> result = [];
         if (numbers.Count < 3)
-            return searchingNumbersList;
+            return result;
         int leftBound = 0;
-        int rightBound = numbers.Count - 1;
-        
-        while (leftBound <= rightBound - 2)
+        while (leftBound <= numbers.Count - 3)
         {
-            if (searchingNumbersList.Count == 3)
+            if (result.Count == 3)
                 break;
-            var searchingNumbers = new List<int>();
+            var triplets = new List<int>();
             for (int i = leftBound; i < leftBound + 3; i++)
             {
-                searchingNumbers.Add(numbers[i]);
+                triplets.Add(numbers[i]);
             }
             
-            if (searchingNumbers.Sum() == num)
+            if (triplets.Sum() == num)
             {
-                searchingNumbersList.Add(searchingNumbers);
+                result.Add(triplets);
             }
             leftBound++;
             
         }
-        return searchingNumbersList;
+        return result;
         
     }
     static void Main()
