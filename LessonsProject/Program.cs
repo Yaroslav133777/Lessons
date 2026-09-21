@@ -6,23 +6,12 @@ internal class Program
         List<List<int>> result = [];
         if (numbers.Count < 3)
             return result;
-        int leftBound = 0;
-        while (leftBound <= numbers.Count - 3)
+        for (int i = 0; i < numbers.Count - 2; i++)
         {
-            if (result.Count == 3)
-                break;
-            var triplets = new List<int>();
-            for (int i = leftBound; i < leftBound + 3; i++)
+            if (numbers[i] + numbers[i + 1] + numbers[i + 2] == num && result.Count < 3)
             {
-                triplets.Add(numbers[i]);
+                result.Add([numbers[i], numbers[i + 1], numbers[i + 2]]);
             }
-            
-            if (triplets.Sum() == num)
-            {
-                result.Add(triplets);
-            }
-            leftBound++;
-            
         }
         return result;
         
