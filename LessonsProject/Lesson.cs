@@ -10,7 +10,7 @@ public class Lesson
     {
         string info = $"Дата занятия - {Date}\n" +
                       $"Аудитория - {AudienceName}\n" +
-                      $"Имя преподавателя - {ProfessorName}\n";
+                      $"Имя преподавателя - {ProfessorName}";
         return info;
     }
     

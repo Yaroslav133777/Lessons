@@ -7,7 +7,7 @@ public class Lecture: Lesson
 
     public override string PrintInfo()
     {
-        string info = base.PrintInfo() + $"Макс студентов в аудитории {MaxStudents}\n"
+        string info = base.PrintInfo() + "\n" + $"Макс студентов в аудитории {MaxStudents}\n"
                 + $"Наличие записи лекции:{IsRecorded}";
         return "";
     }

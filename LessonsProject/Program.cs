@@ -26,7 +26,10 @@ internal class Program
             Console.Clear();
             Console.WriteLine("1.Добавить запись");
             Console.WriteLine("2.Показать список записей");
-            Console.WriteLine("3.Выход");
+            Console.WriteLine("3.Считать и добавить данные с файлы");
+            Console.WriteLine("4.Сохранить в файл");
+            Console.WriteLine("5.Выход");
+            
             string choice = Console.ReadLine().Trim().ToLower();
             switch (choice)
             {
@@ -46,15 +49,47 @@ internal class Program
                     foreach (Lesson lesson in lessons)
                     {
                         Console.WriteLine(separator);
-                        Console.WriteLine($"Дата занятия: {lesson.Date}");
-                        Console.WriteLine($"Аудитория: {lesson.AudienceName}");
-                        Console.WriteLine($"Имя профессора: {lesson.ProfessorName}");
+                        Console.WriteLine(lesson.PrintInfo());
                     }
                     Console.WriteLine("Enter - продолжить");
                     Console.ReadLine();
                     break;
                 }
                 case "3":
+                {
+                    Console.WriteLine("Путь до файла:");
+                    string path = Console.ReadLine().Trim('\'').Trim('\"');
+                    string[] lessonsInfo = File.ReadAllText(path).Split(';');
+                    Console.WriteLine("Добавить данные в список?[y/n]");
+                    string answer = Console.ReadLine().Trim().ToLower();
+                    if (answer == "y")
+                    {
+                        foreach (var info in lessonsInfo)
+                        {
+                            var lessonInfo = info.Split(',');
+                            DateOnly lessonDate = DateOnly.Parse(lessonInfo[0]);
+                            string audienceName = lessonInfo[1].Trim();
+                            string professorName = lessonInfo[2].Trim();
+                            Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
+                            lessons.Add(lesson);
+                            
+                        }
+                    }
+                    break;
+                }
+                case "4":
+                {
+                    Console.WriteLine("Путь к файлу сохранения:");
+                    string path = Console.ReadLine();
+                    using StreamWriter sw = new StreamWriter(path);
+                    foreach (var lesson in lessons)
+                    {
+                        string lessonInfo = $"{lesson.Date}, {lesson.AudienceName}, {lesson.ProfessorName};";
+                        sw.WriteLine(lessonInfo);
+                    }
+                    break;
+                }
+                case "5":
                 {
                     Console.WriteLine("Завершить программу? [y/n]");
                     string answer = Console.ReadLine().Trim().ToLower();
@@ -67,6 +102,8 @@ internal class Program
                 default:
                 {
                     Console.WriteLine("Неизвестная команда");
+                    Console.WriteLine("Enter - продолжить");
+                    Console.ReadLine();
                     break;
                 }
                 
@@ -77,9 +114,7 @@ internal class Program
         foreach (Lesson lesson in lessons)
         {
             Console.WriteLine(separator);
-            Console.WriteLine($"Дата занятия: {lesson.Date}");
-            Console.WriteLine($"Аудитория: {lesson.AudienceName}");
-            Console.WriteLine($"Имя профессора: {lesson.ProfessorName}");
+            Console.WriteLine(lesson.PrintInfo());
         }
         
     }
