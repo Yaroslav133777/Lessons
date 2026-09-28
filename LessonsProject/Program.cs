@@ -119,7 +119,7 @@ public class Program
                 case "4":
                 {
                     Console.WriteLine("Путь к файлу сохранения:");
-                    string path = Console.ReadLine();
+                    string path = Console.ReadLine().Trim('\'').Trim('\"');
                     if (!Path.Exists(path))
                     {
                         Console.WriteLine("Путь не существует");
@@ -135,7 +135,7 @@ public class Program
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Ошибка" + ex.Message);
+                            Console.WriteLine("Ошибка - " + ex.Message);
                         }
                     }
                     break;
