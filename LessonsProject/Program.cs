@@ -1,5 +1,5 @@
 ﻿namespace LessonsProject;
-internal class Program
+public class Program
 {
     public static List<List<int>> TripletsOfNums(List<int> numbers, int num)
     {
@@ -37,7 +37,17 @@ internal class Program
                 {
                     Console.WriteLine("Введите: дату занятия (YYYY.MM.DD), название аудитории и имя преподавателя через запятую");
                     var lessonInfo = Console.ReadLine().Split(',');
-                    DateOnly lessonDate = DateOnly.Parse(lessonInfo[0]);
+                    while (lessonInfo.Length < 3 || lessonInfo.Length > 3)
+                    {
+                        Console.WriteLine("Неверный формат!");
+                        lessonInfo = Console.ReadLine().Split(',');
+                    }
+                    bool tryLessonDate = DateOnly.TryParse(lessonInfo[0], out DateOnly lessonDate);
+                    while (tryLessonDate == false)
+                    {
+                        Console.WriteLine("Неверный формат даты!");
+                        tryLessonDate = DateOnly.TryParse(lessonInfo[0], out lessonDate);
+                    }
                     string audienceName = lessonInfo[1].Trim();
                     string professorName = lessonInfo[2].Trim();
                     Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
@@ -49,7 +59,7 @@ internal class Program
                     foreach (Lesson lesson in lessons)
                     {
                         Console.WriteLine(separator);
-                        Console.WriteLine(lesson.PrintInfo());
+                        Console.WriteLine(lesson.GetInfo());
                     }
                     Console.WriteLine("Enter - продолжить");
                     Console.ReadLine();
@@ -59,7 +69,26 @@ internal class Program
                 {
                     Console.WriteLine("Путь до файла:");
                     string path = Console.ReadLine().Trim('\'').Trim('\"');
-                    string[] lessonsInfo = File.ReadAllText(path).Split(';');
+                    if (!Path.Exists(path))
+                    {
+                        Console.WriteLine("Путь до файла не существует!");
+                        Console.WriteLine("Enter - продолжить");
+                        Console.ReadLine();
+                        break;
+                    }
+
+                    string[] lessonsInfo;
+                    try
+                    {
+                        lessonsInfo = File.ReadAllText(path).Split(';');
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка - " + ex.Message);
+                        Console.WriteLine("Enter - продолжить");
+                        Console.ReadLine();
+                        break;
+                    }
                     Console.WriteLine("Добавить данные в список?[y/n]");
                     string answer = Console.ReadLine().Trim().ToLower();
                     if (answer == "y")
@@ -67,7 +96,17 @@ internal class Program
                         foreach (var info in lessonsInfo)
                         {
                             var lessonInfo = info.Split(',');
-                            DateOnly lessonDate = DateOnly.Parse(lessonInfo[0]);
+                            if (lessonInfo.Length < 3 || lessonInfo.Length > 3)
+                            {
+                               Console.WriteLine("Неверный формат объекта");
+                               continue;
+                            }
+                            bool tryLessonDate = DateOnly.TryParse(lessonInfo[0], out DateOnly lessonDate);
+                            if (tryLessonDate == false)
+                            {
+                                Console.WriteLine("Неверный формат даты");
+                                continue;
+                            }
                             string audienceName = lessonInfo[1].Trim();
                             string professorName = lessonInfo[2].Trim();
                             Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
@@ -81,11 +120,23 @@ internal class Program
                 {
                     Console.WriteLine("Путь к файлу сохранения:");
                     string path = Console.ReadLine();
+                    if (!Path.Exists(path))
+                    {
+                        Console.WriteLine("Путь не существует");
+                        break;
+                    }
                     using StreamWriter sw = new StreamWriter(path);
                     foreach (var lesson in lessons)
                     {
                         string lessonInfo = $"{lesson.Date}, {lesson.AudienceName}, {lesson.ProfessorName};";
-                        sw.WriteLine(lessonInfo);
+                        try
+                        {
+                            sw.WriteLine(lessonInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Ошибка" + ex.Message);
+                        }
                     }
                     break;
                 }
@@ -114,7 +165,7 @@ internal class Program
         foreach (Lesson lesson in lessons)
         {
             Console.WriteLine(separator);
-            Console.WriteLine(lesson.PrintInfo());
+            Console.WriteLine(lesson.GetInfo());
         }
         
     }

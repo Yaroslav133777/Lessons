@@ -6,7 +6,7 @@ public class Lesson
     public string AudienceName { get; set; }
     public string ProfessorName { get; set; }
 
-    public virtual string PrintInfo()
+    public virtual string GetInfo()
     {
         string info = $"Дата занятия - {Date}\n" +
                       $"Аудитория - {AudienceName}\n" +
