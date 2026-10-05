@@ -1,10 +1,9 @@
 namespace LessonsProject;
-
 public class Lesson
 {
     public DateOnly Date { get; set; }
-    public string AudienceName { get; set; }
-    public string ProfessorName { get; set; }
+    public string AudienceName { get; set; } = string.Empty;
+    public string ProfessorName { get; set; } = string.Empty;
 
     public virtual string GetInfo()
     {
@@ -13,5 +12,4 @@ public class Lesson
                       $"Имя преподавателя - {ProfessorName}";
         return info;
     }
-    
 }

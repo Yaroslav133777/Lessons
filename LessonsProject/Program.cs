@@ -19,8 +19,10 @@ public class Program
     static void Main()
     {
         List<Lesson> lessons = [];
+        LessonService service = new LessonService();
+        LessonParser parser = new LessonParser();
+        TextFileStorage storage = new TextFileStorage();
         bool start = true;
-        string separator = "----------------------";
         while (start)
         {
             Console.Clear();
@@ -36,83 +38,43 @@ public class Program
                 case "1":
                 {
                     Console.WriteLine("Введите: дату занятия (YYYY.MM.DD), название аудитории и имя преподавателя через запятую");
-                    var lessonInfo = Console.ReadLine().Split(',');
-                    while (lessonInfo.Length < 3 || lessonInfo.Length > 3)
+                    try
                     {
-                        Console.WriteLine("Неверный формат!");
-                        lessonInfo = Console.ReadLine().Split(',');
+                        lessons.Add(parser.ParseLessonFromString(Console.ReadLine()));
                     }
-                    bool tryLessonDate = DateOnly.TryParse(lessonInfo[0], out DateOnly lessonDate);
-                    while (tryLessonDate == false)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Неверный формат даты!");
-                        tryLessonDate = DateOnly.TryParse(lessonInfo[0], out lessonDate);
+                        Console.WriteLine(e.Message);
                     }
-                    string audienceName = lessonInfo[1].Trim();
-                    string professorName = lessonInfo[2].Trim();
-                    Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
-                    lessons.Add(lesson);
                     break;
                 }
                 case "2":
                 {
-                    foreach (Lesson lesson in lessons)
-                    {
-                        Console.WriteLine(separator);
-                        Console.WriteLine(lesson.GetInfo());
-                    }
+                    Console.WriteLine(service.GetLessonsInfo(lessons));
                     Console.WriteLine("Enter - продолжить");
                     Console.ReadLine();
                     break;
                 }
                 case "3":
                 {
+                    List<Lesson> readLessons; 
                     Console.WriteLine("Путь до файла:");
                     string path = Console.ReadLine().Trim('\'').Trim('\"');
-                    if (!Path.Exists(path))
+                    try
                     {
-                        Console.WriteLine("Путь до файла не существует!");
+                        readLessons = storage.ReadAllLessons(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
                         Console.WriteLine("Enter - продолжить");
                         Console.ReadLine();
                         break;
                     }
 
-                    string[] lessonsInfo;
-                    try
+                    foreach (Lesson lesson in readLessons)
                     {
-                        lessonsInfo = File.ReadAllText(path).Split(';');
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Ошибка - " + ex.Message);
-                        Console.WriteLine("Enter - продолжить");
-                        Console.ReadLine();
-                        break;
-                    }
-                    Console.WriteLine("Добавить данные в список?[y/n]");
-                    string answer = Console.ReadLine().Trim().ToLower();
-                    if (answer == "y")
-                    {
-                        foreach (var info in lessonsInfo)
-                        {
-                            var lessonInfo = info.Split(',');
-                            if (lessonInfo.Length < 3 || lessonInfo.Length > 3)
-                            {
-                               Console.WriteLine("Неверный формат объекта");
-                               continue;
-                            }
-                            bool tryLessonDate = DateOnly.TryParse(lessonInfo[0], out DateOnly lessonDate);
-                            if (tryLessonDate == false)
-                            {
-                                Console.WriteLine("Неверный формат даты");
-                                continue;
-                            }
-                            string audienceName = lessonInfo[1].Trim();
-                            string professorName = lessonInfo[2].Trim();
-                            Lesson lesson = new Lesson() {Date = lessonDate, AudienceName = audienceName, ProfessorName = professorName};
-                            lessons.Add(lesson);
-                            
-                        }
+                        lessons.Add(lesson);
                     }
                     break;
                 }
@@ -120,24 +82,7 @@ public class Program
                 {
                     Console.WriteLine("Путь к файлу сохранения:");
                     string path = Console.ReadLine().Trim('\'').Trim('\"');
-                    if (!Path.Exists(path))
-                    {
-                        Console.WriteLine("Путь не существует");
-                        break;
-                    }
-                    using StreamWriter sw = new StreamWriter(path);
-                    foreach (var lesson in lessons)
-                    {
-                        string lessonInfo = $"{lesson.Date}, {lesson.AudienceName}, {lesson.ProfessorName};";
-                        try
-                        {
-                            sw.WriteLine(lessonInfo);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Ошибка - " + ex.Message);
-                        }
-                    }
+                    storage.WriteAllLessons(path, lessons);
                     break;
                 }
                 case "5":
@@ -162,11 +107,7 @@ public class Program
         }
         Console.Clear();
         Console.WriteLine("Итоговый список записей:");
-        foreach (Lesson lesson in lessons)
-        {
-            Console.WriteLine(separator);
-            Console.WriteLine(lesson.GetInfo());
-        }
-        
+        Console.WriteLine(service.GetLessonsInfo(lessons));
+
     }
 }
