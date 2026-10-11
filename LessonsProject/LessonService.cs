@@ -2,7 +2,7 @@ namespace LessonsProject;
 
 public class LessonService
 {
-    public string GetLessonsInfo(IEnumerable<Lesson> lessons)
+    public string GetLessonsInfo(IEnumerable<RegularLesson> lessons)
     {
         string separator = "----------------------";
         string result = string.Empty;

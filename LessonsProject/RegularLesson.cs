@@ -1,5 +1,5 @@
 namespace LessonsProject;
-public class Lesson
+public class RegularLesson
 {
     public DateOnly Date { get; set; }
     public string AudienceName { get; set; } = string.Empty;
