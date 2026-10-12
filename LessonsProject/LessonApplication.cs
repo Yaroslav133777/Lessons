@@ -5,6 +5,7 @@ public class LessonApplication
     private readonly List<RegularLesson> _lessons = [];
     private readonly LessonService _service = new LessonService();
     private readonly LessonFileService _lessonFileService = new LessonFileService();
+    private readonly Logger _logger = new Logger();
     public bool IsRunning { get; private set; } = true;
     public void PrintMenu()
     {
@@ -24,12 +25,15 @@ public class LessonApplication
     {
         LessonType? type = SelectLessonType();
         if (type == null)
+        {
+            _logger.LogError("Неверно выбран тип занятия");
             return;
+        }
         Console.WriteLine(GetLessonPrompt(type.Value));
         RegularLesson? lesson = ParseLesson(type, Console.ReadLine());
         if (lesson == null)
         {
-            Console.WriteLine("Ошибка: не удалось распознать запись");
+            _logger.LogError("Не удалось распознать запись");
         }
         else
         {
@@ -51,7 +55,7 @@ public class LessonApplication
             case "2": return LessonType.Lecture;
             case "3": return LessonType.Seminar;
             default:
-                Console.WriteLine("Неизвестный тип записи");
+                _logger.LogError("Неизвестный тип занятия");
                 WaitForEnter();
                 return null;
         }
@@ -83,14 +87,17 @@ public class LessonApplication
         string path = Console.ReadLine().Trim('\'').Trim('"');
         try
         {
-            foreach (RegularLesson lesson in ReadLessonsFromFile(type.Value, path))
+            foreach (RegularLesson? lesson in ReadLessonsFromFile(type.Value, path))
             {
-                _lessons.Add(lesson);
+                if (lesson == null)
+                    _logger.LogError("Неправильный формат занятия");
+                else 
+                    _lessons.Add(lesson);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError("Ошибка чтения из файла:\n" + ex.Message);
         }
         WaitForEnter();
     }
@@ -101,14 +108,21 @@ public class LessonApplication
         if (type == null)
             return;
         Console.WriteLine("Путь к файлу сохранения:");
-        string path = Console.ReadLine().Trim('\'').Trim('"');
+        string path = Console.ReadLine().Trim('\'').Trim('"').Trim();
+        if (!File.Exists(path))
+        {
+            _logger.LogError("Ошибка: несуществующий файл");
+            return;
+        }
+        if (_lessons.Count == 0)
+            _logger.LogError("Список занятий пуст!");
         try
         {
             WriteLessonsToFile(type.Value, path);
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError("Ошибка сохранения записи:\n" + ex.Message);
         }
         WaitForEnter();
     }
@@ -134,7 +148,7 @@ public class LessonApplication
         Console.WriteLine("Enter - продолжить");
         Console.ReadLine();
     }
-    private IEnumerable<RegularLesson> ReadLessonsFromFile(LessonType type, string path)
+    private IEnumerable<RegularLesson>? ReadLessonsFromFile(LessonType type, string path)
     {
         switch (type)
         {
