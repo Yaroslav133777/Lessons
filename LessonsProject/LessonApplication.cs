@@ -138,9 +138,9 @@ public class LessonApplication
     {
         switch (type)
         {
-            case LessonType.Lecture: return _lessonFileService.ReadAllLessons(path, new LectureParser());
-            case LessonType.Seminar: return _lessonFileService.ReadAllLessons(path, new SeminarParser());
-            default: return _lessonFileService.ReadAllLessons(path, new RegularLessonParser());
+            case LessonType.Lecture: return _lessonFileService.ReadLessons(path, new LectureParser());
+            case LessonType.Seminar: return _lessonFileService.ReadLessons(path, new SeminarParser());
+            default: return _lessonFileService.ReadLessons(path, new RegularLessonParser());
         }
     }
 
@@ -148,9 +148,9 @@ public class LessonApplication
     {
         switch (type)
         {
-            case LessonType.Lecture: _lessonFileService.WriteAllLessons(path, _lessons.OfType<Lecture>(), new LectureParser()); break;
-            case LessonType.Seminar: _lessonFileService.WriteAllLessons(path, _lessons.OfType<Seminar>(), new SeminarParser()); break;
-            default: _lessonFileService.WriteAllLessons(path, _lessons, new RegularLessonParser()); break;
+            case LessonType.Lecture: _lessonFileService.WriteLessons(path, _lessons.OfType<Lecture>(), new LectureParser()); break;
+            case LessonType.Seminar: _lessonFileService.WriteLessons(path, _lessons.OfType<Seminar>(), new SeminarParser()); break;
+            default: _lessonFileService.WriteLessons(path, _lessons, new RegularLessonParser()); break;
         }
     }
     private string GetLessonPrompt(LessonType type)

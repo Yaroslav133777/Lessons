@@ -2,7 +2,7 @@ namespace LessonsProject;
 
 public class LessonFileService
 {
-    public void WriteAllLessons<T>(string path, IEnumerable<T> lessons, IParser<T> parser) where T : RegularLesson
+    public void WriteLessons<T>(string path, IEnumerable<T> lessons, IParser<T> parser) where T : RegularLesson
     {
         using StreamWriter sw = new StreamWriter(path);
         foreach (var lesson in lessons)
@@ -11,7 +11,7 @@ public class LessonFileService
         }
     }
 
-    public IEnumerable<RegularLesson> ReadAllLessons<T>(string path, IParser<T> parser) where T : RegularLesson
+    public IEnumerable<RegularLesson> ReadLessons<T>(string path, IParser<T> parser) where T : RegularLesson
     {
         List<RegularLesson> readLessons = new List<RegularLesson>();
         foreach (var info in File.ReadAllText(path).Split(';'))
