@@ -11,14 +11,14 @@ public class LessonFileService
         }
     }
 
-    public IEnumerable<RegularLesson> ReadLessons<T>(string path, IParser<T> parser) where T : RegularLesson
+    public IEnumerable<T?> ReadLessons<T>(string path, IParser<T> parser) where T : RegularLesson
     {
-        List<RegularLesson> readLessons = new List<RegularLesson>();
+        List<T?> readLessons = new List<T?>();
         foreach (var info in File.ReadAllText(path).Split(';'))
         {
-            T? lesson = parser.ParseFromString(info);
-            if (lesson != null)
-                readLessons.Add(lesson);
+            if (string.IsNullOrWhiteSpace(info))
+                continue;
+            readLessons.Add(parser.ParseFromString(info));
         }
         return readLessons;
     }

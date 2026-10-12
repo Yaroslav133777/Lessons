@@ -22,7 +22,7 @@ public class LessonFileServiceTest
             };
 
             _service.WriteLessons(path, new[] { lesson }, new RegularLessonParser());
-            RegularLesson read = _service.ReadLessons(path, new RegularLessonParser()).Single();
+            RegularLesson read = _service.ReadLessons(path, new RegularLessonParser()).Single()!;
 
             Assert.Equal(lesson.Date, read.Date);
             Assert.Equal(lesson.AudienceName, read.AudienceName);
@@ -35,7 +35,7 @@ public class LessonFileServiceTest
     }
 
     [Fact]
-    public void ReadAllLessons_SkipsInvalidLines()
+    public void ReadAllLessons_YieldsNullForInvalidLines()
     {
         string path = MakeTempFile();
 
@@ -43,10 +43,11 @@ public class LessonFileServiceTest
         {
             File.WriteAllText(path, "мусор;\n2024.01.15, Ауд.301, Иванов;");
 
-            List<RegularLesson> read = _service.ReadLessons(path, new RegularLessonParser()).ToList();
+            List<RegularLesson?> read = _service.ReadLessons(path, new RegularLessonParser()).ToList();
 
-            Assert.Single(read);
-            Assert.Equal("Иванов", read[0].ProfessorName);
+            Assert.Equal(2, read.Count);
+            Assert.Null(read[0]);
+            Assert.Equal("Иванов", read[1]!.ProfessorName);
         }
         finally
         {
@@ -77,7 +78,7 @@ public class LessonFileServiceTest
             };
 
             _service.WriteLessons(path, new[] { lecture }, new LectureParser());
-            Lecture read = (Lecture)_service.ReadLessons(path, new LectureParser()).Single();
+            Lecture read = _service.ReadLessons(path, new LectureParser()).Single()!;
 
             Assert.Equal(lecture.Date, read.Date);
             Assert.Equal(lecture.MaxStudents, read.MaxStudents);

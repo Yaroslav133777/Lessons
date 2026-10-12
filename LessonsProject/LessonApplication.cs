@@ -89,10 +89,12 @@ public class LessonApplication
         {
             foreach (RegularLesson? lesson in ReadLessonsFromFile(type.Value, path))
             {
-                if (lesson == null)
-                    _logger.LogError("Неправильный формат занятия");
-                else 
+                if (lesson != null)
+                {
                     _lessons.Add(lesson);
+                }
+                else
+                    _logger.LogError("Неверный формат записи");
             }
         }
         catch (Exception ex)
@@ -112,10 +114,9 @@ public class LessonApplication
         if (!File.Exists(path))
         {
             _logger.LogError("Ошибка: несуществующий файл");
+            WaitForEnter();
             return;
         }
-        if (_lessons.Count == 0)
-            _logger.LogError("Список занятий пуст!");
         try
         {
             WriteLessonsToFile(type.Value, path);
@@ -148,7 +149,7 @@ public class LessonApplication
         Console.WriteLine("Enter - продолжить");
         Console.ReadLine();
     }
-    private IEnumerable<RegularLesson>? ReadLessonsFromFile(LessonType type, string path)
+    private IEnumerable<RegularLesson?> ReadLessonsFromFile(LessonType type, string path)
     {
         switch (type)
         {
