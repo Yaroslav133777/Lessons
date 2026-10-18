@@ -1,12 +1,44 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
+
 namespace LessonsProject;
 
-public class LessonApplication
+public class LessonApplication : IDisposable
 {
     private readonly List<RegularLesson> _lessons = [];
     private readonly LessonService _service = new LessonService();
     private readonly LessonFileService _lessonFileService = new LessonFileService();
-    private readonly Logger _logger = new Logger();
+    private readonly ILogger<LessonApplication> _logger;
+    private readonly ILoggerFactory? _loggerFactory;
     public bool IsRunning { get; private set; } = true;
+
+    public LessonApplication(bool isLogging)
+    {
+        if (isLogging)
+        {
+            _loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
+                builder.AddSimpleConsole(options =>
+                {
+                    options.ColorBehavior = LoggerColorBehavior.Disabled;
+                    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+                });
+            });
+            _logger = _loggerFactory.CreateLogger<LessonApplication>();
+        }
+        else
+        {
+            _logger = NullLogger<LessonApplication>.Instance;
+        }
+    }
+
+    public void Dispose()
+    {
+        _loggerFactory?.Dispose();
+    }
+    
     public void PrintMenu()
     {
         Console.Clear();
@@ -74,6 +106,10 @@ public class LessonApplication
 
     public void ShowLessons()
     {
+        if (_lessons.Count == 0)
+        {
+            _logger.LogError("Список занятий пуст");
+        }
         Console.WriteLine(_service.GetLessonsInfo(_lessons));
         WaitForEnter();
     }
@@ -99,7 +135,7 @@ public class LessonApplication
         }
         catch (Exception ex)
         {
-            _logger.LogError("Ошибка чтения из файла:\n" + ex.Message);
+            _logger.LogError(ex, "Ошибка чтения из файла");
         }
         WaitForEnter();
     }
@@ -117,13 +153,17 @@ public class LessonApplication
             WaitForEnter();
             return;
         }
+        if (_lessons.Count == 0)
+        {
+            _logger.LogError("Нет занятий для сохранения");
+        }
         try
         {
             WriteLessonsToFile(type.Value, path);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Ошибка сохранения записи:\n" + ex.Message);
+            _logger.LogError(ex, "Ошибка сохранения записи");
         }
         WaitForEnter();
     }

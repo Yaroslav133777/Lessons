@@ -16,9 +16,9 @@ public class Program
         }
         return result;
     }
-    static void Main()
+    static void Main(string[] args)
     {
-        LessonApplication lessonApplication = new LessonApplication();
+        using LessonApplication lessonApplication = new LessonApplication(args.Contains("--log"));
         while (lessonApplication.IsRunning)
         {
             lessonApplication.PrintMenu();
