@@ -33,47 +33,6 @@ public class LessonApplication : IDisposable
             _logger = NullLogger<LessonApplication>.Instance;
         }
     }
-
-    public void Dispose()
-    {
-        _loggerFactory?.Dispose();
-    }
-    
-    public void PrintMenu()
-    {
-        Console.Clear();
-        Console.WriteLine("1.Добавить запись");
-        Console.WriteLine("2.Показать список записей");
-        Console.WriteLine("3.Считать и добавить данные с файлы");
-        Console.WriteLine("4.Сохранить в файл");
-        Console.WriteLine("5.Выход");
-    }
-    public string ReadCommand()
-    {
-        return Console.ReadLine().Trim().ToLower();
-    }
-
-    public void AddLesson()
-    {
-        LessonType? type = SelectLessonType();
-        if (type == null)
-        {
-            _logger.LogError("Неверно выбран тип занятия");
-            return;
-        }
-        Console.WriteLine(GetLessonPrompt(type.Value));
-        RegularLesson? lesson = ParseLesson(type, Console.ReadLine());
-        if (lesson == null)
-        {
-            _logger.LogError("Не удалось распознать запись");
-        }
-        else
-        {
-            _lessons.Add(lesson);
-        }
-        WaitForEnter();
-    }
-
     private LessonType? SelectLessonType()
     {
         Console.WriteLine("Выберите тип записи:");
@@ -104,6 +63,54 @@ public class LessonApplication : IDisposable
         return null;
     }
 
+    public void Dispose()
+    {
+        _loggerFactory?.Dispose();
+    }
+    
+    public void PrintMenu(Menu menu)
+    {
+        Console.Clear();
+        menu.Run();
+    }
+
+    public void ExecuteCommand(Menu menu, string choice)
+    {
+        MenuItem? item = menu.Execute(int.Parse(choice));
+        if (item == null)
+        {
+            UnknownCommandMessage();
+            return;
+        }
+        item.Run();
+    }
+
+    public string ReadCommand()
+    {
+        return Console.ReadLine().Trim().ToLower();
+    }
+
+    public void AddLesson()
+    {
+        LessonType? type = SelectLessonType();
+        if (type == null)
+        {
+            _logger.LogError("Неверно выбран тип занятия");
+            return;
+        }
+        Console.WriteLine(GetLessonPrompt(type.Value));
+        RegularLesson? lesson = ParseLesson(type, Console.ReadLine());
+        if (lesson == null)
+        {
+            _logger.LogError("Не удалось распознать запись");
+        }
+        else
+        {
+            _lessons.Add(lesson);
+        }
+        WaitForEnter();
+    }
+    
     public void ShowLessons()
     {
         if (_lessons.Count == 0)

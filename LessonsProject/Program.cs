@@ -19,21 +19,17 @@ public class Program
     static void Main(string[] args)
     {
         using LessonApplication lessonApplication = new LessonApplication(args.Contains("--log"));
+        Menu menu = new Menu();
+        menu.AddItem(new ("Добавить запись",lessonApplication.AddLesson));
+        menu.AddItem(new("Показать список записей", lessonApplication.ShowLessons));
+        menu.AddItem(new("Считать и добавить данные с файлы", lessonApplication.ReadFromFile));
+        menu.AddItem(new("Сохранить в файл", lessonApplication.SaveToFile));
+        menu.AddItem(new ("Выход", lessonApplication.Exit));
         while (lessonApplication.IsRunning)
         {
-            lessonApplication.PrintMenu();
+            lessonApplication.PrintMenu(menu);
             string choice = lessonApplication.ReadCommand();
-            switch (choice)
-            {
-                case "1": lessonApplication.AddLesson(); break;
-                case "2": lessonApplication.ShowLessons(); break;
-                case "3": lessonApplication.ReadFromFile(); break;
-                case "4": lessonApplication.SaveToFile(); break;
-                case "5": lessonApplication.Exit(); break;
-                default:
-                    lessonApplication.UnknownCommandMessage();
-                    break;
-            }
+            lessonApplication.ExecuteCommand(menu, choice);
         }
     }
 }
