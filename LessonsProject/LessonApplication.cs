@@ -68,28 +68,6 @@ public class LessonApplication : IDisposable
         _loggerFactory?.Dispose();
     }
     
-    public void PrintMenu(Menu menu)
-    {
-        Console.Clear();
-        menu.Run();
-    }
-
-    public void ExecuteCommand(Menu menu, string choice)
-    {
-        MenuItem? item = menu.Execute(int.Parse(choice));
-        if (item == null)
-        {
-            UnknownCommandMessage();
-            return;
-        }
-        item.Run();
-    }
-
-    public string ReadCommand()
-    {
-        return Console.ReadLine().Trim().ToLower();
-    }
-
     public void AddLesson()
     {
         LessonType? type = SelectLessonType();
@@ -186,11 +164,6 @@ public class LessonApplication : IDisposable
         }
     }
 
-    public void UnknownCommandMessage()
-    {
-        Console.WriteLine("Неизвестная команда");
-        WaitForEnter();
-    }
     public void WaitForEnter()
     {
         Console.WriteLine("Enter - продолжить");

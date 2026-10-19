@@ -25,11 +25,6 @@ public class Program
         menu.AddItem(new("Считать и добавить данные с файлы", lessonApplication.ReadFromFile));
         menu.AddItem(new("Сохранить в файл", lessonApplication.SaveToFile));
         menu.AddItem(new ("Выход", lessonApplication.Exit));
-        while (lessonApplication.IsRunning)
-        {
-            lessonApplication.PrintMenu(menu);
-            string choice = lessonApplication.ReadCommand();
-            lessonApplication.ExecuteCommand(menu, choice);
-        }
+        menu.Run(() => lessonApplication.IsRunning);
     }
 }
