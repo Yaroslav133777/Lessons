@@ -16,15 +16,18 @@ public class Program
         }
         return result;
     }
+
     static void Main(string[] args)
     {
         using LessonApplication lessonApplication = new LessonApplication(args.Contains("--log"));
-        Menu menu = new Menu();
-        menu.AddItem(new ("Добавить запись",lessonApplication.AddLesson));
-        menu.AddItem(new("Показать список записей", lessonApplication.ShowLessons));
-        menu.AddItem(new("Считать и добавить данные с файлы", lessonApplication.ReadFromFile));
-        menu.AddItem(new("Сохранить в файл", lessonApplication.SaveToFile));
-        menu.AddItem(new ("Выход", lessonApplication.Exit));
-        menu.Run(() => lessonApplication.IsRunning);
+        Menu menu = new Menu(
+        [
+            new("Добавить запись", lessonApplication.AddLesson),
+            new("Показать список записей", lessonApplication.ShowLessons),
+            new("Считать и добавить данные с файлы", lessonApplication.ReadFromFile),
+            new("Сохранить в файл", lessonApplication.SaveToFile),
+            new ("Выход", lessonApplication.Exit)
+        ]);
+        menu.Run();
     }
 }

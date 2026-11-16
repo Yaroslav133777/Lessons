@@ -11,7 +11,6 @@ public class LessonApplication : IDisposable
     private readonly LessonFileService _lessonFileService = new LessonFileService();
     private readonly ILogger<LessonApplication> _logger;
     private readonly ILoggerFactory? _loggerFactory;
-    public bool IsRunning { get; private set; } = true;
 
     public LessonApplication(bool isLogging)
     {
@@ -160,7 +159,7 @@ public class LessonApplication : IDisposable
         string answer = Console.ReadLine().Trim().ToLower();
         if (answer == "y")
         {
-            IsRunning = false;
+            Environment.Exit(0);
         }
     }
 

@@ -5,9 +5,15 @@ public class Menu
     private List<MenuItem> MenuItems { get; } = new List<MenuItem>();
     public void AddItem(MenuItem item) => MenuItems.Add(item);
 
-    public void Run(Func<bool> isRunning)
+    public Menu(List<MenuItem> items)
     {
-        while (isRunning())
+        foreach (var item in items)
+            AddItem(item);
+    }
+
+    public void Run()
+    {
+        while (true)
         {
             Print();
             string command = Console.ReadLine().Trim();
